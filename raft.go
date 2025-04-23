@@ -69,3 +69,29 @@ func NewConsensusModule(id int , peerIds []int , server *Server , ready <-chan a
 
 	return cm
 }
+
+
+// Report reports the state of this CM.
+func (cm *ConsensusModule) Report() (id int, term int, isLeader bool) {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	return cm.id, cm.currentTerm, cm.state == Leader
+}
+
+// Stop stops this CM, cleaning up its state. This method returns quickly, but
+// it may take a bit of time (up to ~election timeout) for all goroutines to
+// exit.
+func (cm *ConsensusModule) Stop() {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.state = Dead
+	cm.dlog("becomes Dead")
+}
+
+// dlog logs a debugging message if DebugCM > 0.
+func (cm *ConsensusModule) dlog(format string, args ...any) {
+	if DebugCM > 0 {
+		format = fmt.Sprintf("[%d] ", cm.id) + format
+		log.Printf(format, args...)
+	}
+}
