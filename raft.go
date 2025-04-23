@@ -1,4 +1,14 @@
 // Core Raft implementation - Consensus Module.
+package raft
+
+import (
+	"fmt"
+	"log"
+	"math/rand"
+	"os"
+	"sync"
+	"time"
+)
 
 const DebugCM = 1
 
